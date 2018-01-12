@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "356901054098",
+    "firebase_url": "https://messageexdemo.firebaseio.com",
+    "project_id": "messageexdemo",
+    "storage_bucket": "messageexdemo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:356901054098:android:8b80dcab863b98ee",
+        "android_client_info": {
+          "package_name": "idv.alfie.firebasenotificationexdemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "356901054098-rd3k0j3pankuftr11j6mcs0cvj1hd1ue.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "idv.alfie.firebasenotificationexdemo",
+            "certificate_hash": "1bacacb6c120bccd501d2eb0d984baf9f84ffd71"
+          }
+        },
+        {
+          "client_id": "356901054098-2ol0l4o3c3fusk6cv7ck7on6kh1ikln0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2otl6EiSkNA2DCTE0heT5SYjU17e6ZI4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "356901054098-2ol0l4o3c3fusk6cv7ck7on6kh1ikln0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

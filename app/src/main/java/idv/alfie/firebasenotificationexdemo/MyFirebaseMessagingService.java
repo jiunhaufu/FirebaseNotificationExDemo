@@ -9,6 +9,9 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -24,11 +27,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d(TAG, "From: " + remoteMessage.getFrom());
-
+        //從Notification來的訊息
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
             sendBroadcast(new Intent(INTENT_FILTER));
+        }
+        //從Data發送來的資料
+        if (remoteMessage.getData().size() > 0) {
+            Log.e(TAG, "Message data payload: " + remoteMessage.getData());
+            if (true) {
+                //另開一條執行緒執行data指令
+                scheduleJob();
+            } else {
+                //不動作
+                handleNow();
+            }
         }
     }
 
@@ -52,4 +66,59 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
+
+    private void scheduleJob() {
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        Job myJob = dispatcher.newJobBuilder()
+                .setService(MyJobService.class)
+                .setTag("my-job-tag")
+                .build();
+        dispatcher.schedule(myJob);
+    }
+
+    private void handleNow() {
+        Log.d(TAG, "Short lived task is done.");
+    }
+
+    /************nodeJS server*************
+
+    var request = require('request-promise');
+    var await = require('asyncawait/await');
+
+    var cloud_msg_key = 'AIza*******0kHI'
+    var msgLife = 60*60*24  //一天
+
+    var Firebase = {};
+
+    Firebase.systemMsg = (tle, msg) => {
+        var result = await(request({
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'key='+ cloud_msg_key,
+            },
+            uri: 'https://fcm.googleapis.com/fcm/send',
+            body: JSON.stringify({
+                condition: "'SYSTEM' in topics",
+                content_available: true,
+                time_to_live: msgLife,
+                notification : {
+                    title : tle,
+                    body : msg,
+                    sound : 'default',
+                },
+                data : {
+                    title : tle,
+                    message : msg,
+                },
+             }),
+            method: 'POST'
+        }, function (err, res, body) {
+            var obj = JSON.parse(body);
+            if(!err) return obj;
+        }));
+        return JSON.parse(result);
+    }
+    module.exports = Firebase;
+
+    */
 }

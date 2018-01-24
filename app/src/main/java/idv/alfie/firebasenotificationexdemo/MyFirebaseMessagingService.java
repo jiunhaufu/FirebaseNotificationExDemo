@@ -4,17 +4,17 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
-import com.firebase.jobdispatcher.Job;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 /**
  * Created by Jiunhau.Fu on 2017/12/8.
@@ -31,19 +31,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
+            //前景發送通知
             sendBroadcast(new Intent(INTENT_FILTER));
         }
         //從Data發送來的資料
-        if (remoteMessage.getData().size() > 0) {
+        if (remoteMessage.getData().size() > 0 ) {
             Log.e(TAG, "Message data payload: " + remoteMessage.getData());
             if (true) {
-                //另開一條執行緒執行data指令
-                scheduleJob();
+                //執行data指令
             } else {
                 //不動作
-                handleNow();
             }
         }
+        //新增通知計數
+        updateBagdeCount();
     }
 
     private void sendNotification(String title, String message) {
@@ -55,7 +56,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.mipmap.ic_launcher_round)
+                        .setSmallIcon(R.drawable.ic_stat_name)
                         .setContentTitle(title)
                         .setContentText(message)
                         .setAutoCancel(true)
@@ -67,17 +68,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 
-    private void scheduleJob() {
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
-        Job myJob = dispatcher.newJobBuilder()
-                .setService(MyJobService.class)
-                .setTag("my-job-tag")
-                .build();
-        dispatcher.schedule(myJob);
-    }
-
-    private void handleNow() {
-        Log.d(TAG, "Short lived task is done.");
+    private void updateBagdeCount(){
+        SharedPreferences sharedPreferences = getSharedPreferences("Badge", MODE_PRIVATE);
+        int badgeCount = sharedPreferences.getInt("Badge",0);
+        badgeCount++;
+        sharedPreferences.edit().putInt("Badge", badgeCount).apply();
+        ShortcutBadger.applyCount(MyFirebaseMessagingService.this, badgeCount);
     }
 
     /************nodeJS server*************

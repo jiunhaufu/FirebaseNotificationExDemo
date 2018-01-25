@@ -43,8 +43,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //不動作
             }
         }
-        //新增通知計數
-        updateBagdeCount();
     }
 
     private void sendNotification(String title, String message) {
@@ -66,14 +64,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-    }
-
-    private void updateBagdeCount(){
-        SharedPreferences sharedPreferences = getSharedPreferences("Badge", MODE_PRIVATE);
-        int badgeCount = sharedPreferences.getInt("Badge",0);
-        badgeCount++;
-        sharedPreferences.edit().putInt("Badge", badgeCount).apply();
-        ShortcutBadger.applyCount(MyFirebaseMessagingService.this, badgeCount);
     }
 
     /************nodeJS server*************
@@ -101,10 +91,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     title : tle,
                     body : msg,
                     sound : 'default',
+                    badge: '1',
                 },
                 data : {
                     title : tle,
                     message : msg,
+                    badge: '1',
                 },
              }),
             method: 'POST'

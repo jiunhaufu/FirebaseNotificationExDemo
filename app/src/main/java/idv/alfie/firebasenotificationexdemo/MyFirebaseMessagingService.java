@@ -62,13 +62,39 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 
-
     //Notification 前景可用onMessageReceived 背景系統自動接收
     //Data 前景背景都可用onMessageReceived
     //Notification,Data 同時發送 前景可用onMessageReceived 背景只有系統自動接收Notification，Data不運作
     //FirebaseDataReceiver可監測所有發送進來的訊息，Notification,Data 同時發送會收到兩筆訊息
-    /************nodeJS server*************
 
+    /*************post request*************
+     method:
+        Post
+     url:
+        https://fcm.googleapis.com/fcm/send
+     headers:
+        Content-Type: application/json
+        Authorization: key=AIza*************0kHI
+     body:
+         {
+            "condition": "'a1234567' in topics || 'SYSTEM' in topics",
+            "content_available": true,
+            "time_to_live": 60,
+            "data": {
+                "message": "This is a Firebase Cloud Messaging Topic Message!",
+                "badge": "1"
+            },
+            "notification" : {
+                "body" : "pc test",
+                "title" : "PC",
+                "icon" : "myicon",
+                "sound" : "default",
+                "badge" : "1"
+            }
+         }
+
+    ***************************************/
+    /************nodeJS server*************
     var request = require('request-promise');
     var await = require('asyncawait/await');
 
@@ -108,6 +134,5 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         return JSON.parse(result);
     }
     module.exports = Firebase;
-
-    */
+    ***************************************/
 }

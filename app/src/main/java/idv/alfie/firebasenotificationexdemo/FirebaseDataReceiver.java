@@ -22,10 +22,10 @@ public class FirebaseDataReceiver extends WakefulBroadcastReceiver {
         //監控所有推播
         if (intent != null && intent.getExtras() != null) {
             Bundle extras = intent.getExtras();
-            String someData= extras.getString("badge");
+            //String someData= extras.getString("badge");
+            //Log.d(TAG, someData);
             //新增計數標記
             updateBagdeCount(context);
-            Log.d(TAG, someData);
         }
     }
 
